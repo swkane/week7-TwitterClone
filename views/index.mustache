@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Gabble</title>
+    <link rel="stylesheet" href="/style.css">
+  </head
+  <body>
+    <header>
+      <nav>
+        <ul class="nav-bar">
+          <a href="/home"><li>Gabble</li></a>
+          <a href="/create-gab"><li>Create a New Gab</li></a>
+          <a href="/profile"><li>Loggin in as [current user] {{username}}</li></a>
+          <a href="/logout"><li>Logout</li></a>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <h3>Welcome to Gabble</h3>
+      <div class="container">
+        <p>
+          <span>{{}}Other User:</span> {{}} content of post
+        </p>
+        <p>{{}} created at</p>
+        <p>{{}} # of likes</p>
+        <button type="button" name="like">Like</button>
+        <!-- {{!#}}post belongs to user -->
+        <button type="button" name="delete"></button>
+        {{!/}}
+      </div>
+    </main>
+  </body>
+</html>

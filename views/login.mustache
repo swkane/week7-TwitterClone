@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Gabble</title>
+    <link rel="stylesheet" href="/style.css">
+
+  </head
+  <body>
+    <header>
+      <nav>
+        <ul class="nav-bar">
+          <a href="/home"><li>Gabble</li></a>
+          <a href="/create-gab"><li>Create a New Gab</li></a>
+          <a href="/profile"><li>Loggin in as [current user] {{username}}</li></a>
+          <a href="/logout"><li>Logout</li></a>
+        </ul>
+      </nav>
+    </header>
+    <h3>Welcome to Gabble</h3>
+    <form class="authenticate" action="" method="post">
+      <label for="username">Username: </label>
+      <input type="text" name="username" value="">
+      <label for="password">Password: </label>
+      <input type="password" name="password" value="">
+      <!-- TODO: Build in logic for only showing this to new user -->
+      {{#newUser}}
+      <label for="password_confirm">Password Confirmation: </label>
+      <input type="password" name="password_confirm" value="">
+      {{/newUser}}
+      {{^newUser}}
+      <!-- TODO: Build in logic for only showing this to existing user -->
+      <button type="submit" name="button" formaction="/login">Login</button>
+      {{/newUser}}
+      {{#newUser}}
+      <!-- TODO: Build in logic for only showing this to new user -->
+      <button type="register" name="button" formaction="/register">Register</button>
+      {{/newUser}}
+    </form>
+  </body>
+</html>
