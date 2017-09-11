@@ -5,6 +5,8 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
+        Post.belongsTo(models.User, {foreignKey: 'userId'});
+        Post.hasMany(models.Like, {foreignKey: 'postId'});
         // associations can be defined here
       }
     }
