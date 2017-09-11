@@ -5,12 +5,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
-    }
+    },
+    userId: DataTypes.INTEGER,
+    postId: DataTypes.INTEGER
   }, {
     classMethods: {
       associate: function(models) {
         Like.belongsTo(models.User, {foreignKey: 'userId'});
-        Like.belongsTo(models.Like, {foreignKey: 'userId'});
+        Like.belongsTo(models.Post, {foreignKey: 'postId'});
         // associations can be defined here
       }
     }

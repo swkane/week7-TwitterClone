@@ -1,7 +1,8 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var Post = sequelize.define('Post', {
-    body: DataTypes.STRING
+    body: DataTypes.STRING,
+    userId: DataTypes.INTEGER
   }, {
     classMethods: {
       associate: function(models) {
