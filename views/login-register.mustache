@@ -19,6 +19,10 @@
     </header>
     <h3>Welcome to Gabble</h3>
     <form class="authenticate" action="" method="post">
+      {{#newUser}}
+        <label for="displayName">Name: </label>
+        <input type="text" name="displayName" value="">
+      {{/newUser}}
       <label for="username">Username: </label>
       <input type="text" name="username" value="">
       <label for="password">Password: </label>
@@ -30,11 +34,11 @@
       {{/newUser}}
       {{^newUser}}
       <!-- TODO: Build in logic for only showing this to existing user -->
-      <button type="submit" name="button" formaction="/login">Login</button>
+      <button type="submit" name="button" formaction="/auth/login">Login</button>
       {{/newUser}}
       {{#newUser}}
       <!-- TODO: Build in logic for only showing this to new user -->
-      <button type="register" name="button" formaction="/register">Register</button>
+      <button type="register" name="button" formaction="/auth/register">Register</button>
       {{/newUser}}
     </form>
   </body>
