@@ -36,10 +36,15 @@ passport.use(new Strategy(jwtOptions, (payload, done) => {
 router.use(passport.initialize());
 
 // setting up session
-
 passport.session = {
-  username: "",
-  token: ""
+    user_id: "",
+    username: "",
+    displayName: "",
+    password: "",
+    created_at: "",
+    updated_at: "",
+    messages: [],
+    token: ""
 }
 
 
@@ -63,6 +68,8 @@ router.post('/auth/register', (req, res) => {
   });
 })
 
+// AUTH
+
 // Login
 router.get('/auth/login', (req, res) => {
   let newUser = false;
@@ -77,6 +84,8 @@ router.post("/auth/login", (req, res) => {
                   const payload = { id: user.get("id") };
                   const token = jwt.sign(payload, jwtOptions.secretOrKey);
                   req.session.username = username;
+                  req.session.password = password;
+                  req.session.user_id = user.get('id');
                   req.session.token = token;
                   res.json({token: req.session.token, username: req.session.username, success: true });
               } else {
@@ -96,6 +105,28 @@ router.get('/auth/logout', (req, res) => {
 router.get('/home', (req, res) => {
   res.render('index');
 })
+
+// LIKES
+
+
+// MESSAGES
+
+
+// USERS
+
+// ERROR claims that username is undefined
+router.delete('/user', (req, res) => {
+  console.log(req.session.user_id);
+  models.User.destroy({
+    where: {
+      id: req.session.user_id
+    }
+  }).then((user) => {
+    res.json({user: req.session.user_id})
+  });
+});
+
+
 
 
 module.exports = router;
