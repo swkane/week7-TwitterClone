@@ -35,6 +35,12 @@ passport.use(new Strategy(jwtOptions, (payload, done) => {
 }));
 router.use(passport.initialize());
 
+// setting up session
+
+passport.session = {
+  username: "",
+  token: ""
+}
 
 
 // Create a new user
@@ -70,15 +76,22 @@ router.post("/auth/login", (req, res) => {
               if (user && bcrypt.compareSync(password, user.get("password"))) {
                   const payload = { id: user.get("id") };
                   const token = jwt.sign(payload, jwtOptions.secretOrKey);
-                  res.json({ token, success: true });
+                  req.session.username = username;
+                  req.session.token = token;
+                  res.json({token: req.session.token, username: req.session.username, success: true });
               } else {
                   res.json({ success: false });
               }
         });
 });
 
-// Index
+// Logout
+router.get('/auth/logout', (req, res) => {
+  req.session.username = "";
+  req.session.token = "";
+})
 
+// Index
 router.get('/home', (req, res) => {
   res.render('index');
 })
