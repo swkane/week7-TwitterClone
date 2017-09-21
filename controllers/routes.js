@@ -2,16 +2,40 @@ const express = require('express');
 const router = express.Router();
 const models = require('../models');
 const bodyParser = require('body-parser');
+const passport = require("passport");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { ExtractJwt } = require("passport-jwt");
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true}));
 
+// Authentication Boiler Plate
+
+const { Strategy } = require("passport-jwt");
+const authMiddleware = passport.authenticate("jwt", { session: false });
+const jwtOptions = {
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: "elbbag"
+};
+
+passport.use(new Strategy(jwtOptions, (payload, done) => {
+    models.users.findById(payload.id)
+      .then(user => {
+        if (typeof user !== "undefined") {
+          // authenticated!
+          done(null, user);
+        } else {
+          // not authenticated
+          done(null, false);
+        }
+      })
+      // or, more succinctly..
+      .then(user => done(null, user || false));
+}));
+router.use(passport.initialize());
 
 
-router.get('/auth/login', (req, res) => {
-  let newUser = false;
-  res.render('login-register', {newUser});
-});
 
 // Create a new user
 router.get('/auth/register', (req, res) => {
@@ -20,16 +44,10 @@ router.get('/auth/register', (req, res) => {
 })
 
 router.post('/auth/register', (req, res) => {
-  // models.User.create({
-  //   username: 'test',
-  //   password: 'test',
-  //   displayName: 'Test User'
-  // })
-  //This is for when we switch to the front end, commented out to pass tests
   models.User.create({
     displayName: req.body.displayName,
     username: req.body.username,
-    password: req.body.password
+    password: bcrypt.hashSync(req.body.password, 8)
   })
   .then(function(user) {
 
@@ -38,6 +56,28 @@ router.post('/auth/register', (req, res) => {
     //  res.redirect('/home')
   });
 })
+
+// Login
+router.get('/auth/login', (req, res) => {
+  let newUser = false;
+  res.render('login-register', {newUser});
+});
+
+router.post("/auth/login", (req, res) => {
+    const { username, password } = req.body;
+    models.User.find({  where: { username }})
+        .then(user => {
+              if (user && bcrypt.compareSync(password, user.get("password"))) {
+                  const payload = { id: user.get("id") };
+                  const token = jwt.sign(payload, jwtOptions.secretOrKey);
+                  res.json({ token, success: true });
+              } else {
+                  res.json({ success: false });
+              }
+        });
+});
+
+// Index
 
 router.get('/home', (req, res) => {
   res.render('index');
