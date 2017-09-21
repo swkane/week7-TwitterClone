@@ -89,6 +89,7 @@ router.post("/auth/login", (req, res) => {
 router.get('/auth/logout', (req, res) => {
   req.session.username = "";
   req.session.token = "";
+  res.json({success: true, message: "Logged out!"});
 })
 
 // Index
