@@ -202,6 +202,15 @@ router.get('/user', (req, res) => {
 });
 
 // Update a users password
+router.patch('/user', (req, res) => {
+  models.User.update({
+    password: bcrypt.hashSync(req.body.password, 8)
+  }, {
+    where: {
+      id: req.session.user_id
+    }
+  }).then(user => res.json({user: req.session.user_id}))
+})
 
 
 // delete a user and everything associated with it
