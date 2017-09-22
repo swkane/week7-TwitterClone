@@ -20,7 +20,7 @@ const jwtOptions = {
 };
 
 passport.use(new Strategy(jwtOptions, (payload, done) => {
-    models.users.findById(payload.id)
+    models.User.findById(payload.id)
       .then(user => {
         if (typeof user !== "undefined") {
           // authenticated!
@@ -108,7 +108,7 @@ router.get('/home', (req, res) => {
 // LIKES
 
 //create a like
-router.post('/likes', (req, res) => {
+router.post('/likes', authMiddleware, (req, res) => {
   models.Like.create({
     postId: req.body.messageId,
     userId: req.body.userId
