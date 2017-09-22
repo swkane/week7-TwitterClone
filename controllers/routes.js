@@ -96,8 +96,7 @@ router.post("/auth/login", (req, res) => {
 
 // Logout
 router.get('/auth/logout', (req, res) => {
-  req.session.username = "";
-  req.session.token = "";
+  req.session.destroy();
   res.json({success: true, message: "Logged out!"});
 })
 
@@ -108,13 +107,89 @@ router.get('/home', (req, res) => {
 
 // LIKES
 
+//create a like
+router.post('/likes', (req, res) => {
+  models.Like.create({
+    postId: req.body.messageId,
+    userId: req.body.userId
+  })
+  .then((like) => {
+    console.log(like);
+    res.json({message: like});
+  })
+})
+
+// delete a like
+router.delete('/likes/:id', (req, res) => {
+  models.Like.destroy({
+    where: {
+      id: req.params.id
+    }
+  })
+  .then((like) => {
+    res.json({like: req.params.id});
+  })
+})
+
+
 
 // MESSAGES
 
+// create a message
+router.post('/messages', (req, res) => {
+  models.Post.create({
+    body: req.body.text,
+    userId: req.session.user_id
+  })
+  .then((post) => {
+    console.log(post.get('id'));
+    res.json({message: post})
+  })
+})
+
+// get all messages created by all users with likes
+router.get('/messages', (req, res) => {
+  models.Post.findAll({include: [models.Like]})
+  .then((posts) => {
+    res.json({messages: posts})
+  })
+})
+
+// get 1 message by id with its likes
+router.get('/messages/:id', (req, res) => {
+  models.Post.findById(req.params.id, {
+    include: [models.Like]
+  })
+  .then((post) => {
+    res.json({message: post})
+  });
+});
+
+// Delete a specific message by id
+
+
+router.delete('/messages/:id', (req, res) => {
+  // delete the likes on the message
+  models.Like.destroy({
+    where: {
+      postId: req.params.id
+    }
+  })
+  .then(() => {
+    return models.Post.destroy({
+      where: {
+        id: req.params.id
+      }
+    })
+  })
+  .then(() => {
+    res.json({message: req.params.id})
+  })
+})
 
 // USERS
 
-// ERROR claims that username is undefined
+
 router.delete('/user', (req, res) => {
   console.log(req.session.user_id);
   models.User.destroy({
