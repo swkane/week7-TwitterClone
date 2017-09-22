@@ -30,8 +30,6 @@ passport.use(new Strategy(jwtOptions, (payload, done) => {
           done(null, false);
         }
       })
-      // or, more succinctly..
-      .then(user => done(null, user || false));
 }));
 router.use(passport.initialize());
 
@@ -120,7 +118,7 @@ router.post('/likes', authMiddleware, (req, res) => {
 })
 
 // delete a like
-router.delete('/likes/:id', (req, res) => {
+router.delete('/likes/:id', authMiddleware, (req, res) => {
   models.Like.destroy({
     where: {
       id: req.params.id
@@ -136,7 +134,7 @@ router.delete('/likes/:id', (req, res) => {
 // MESSAGES
 
 // create a message
-router.post('/messages', (req, res) => {
+router.post('/messages', authMiddleware, (req, res) => {
   models.Post.create({
     body: req.body.text,
     userId: req.session.user_id
@@ -168,7 +166,7 @@ router.get('/messages/:id', (req, res) => {
 // Delete a specific message by id
 
 
-router.delete('/messages/:id', (req, res) => {
+router.delete('/messages/:id', authMiddleware, (req, res) => {
   // delete the likes on the message
   models.Like.destroy({
     where: {
@@ -190,7 +188,7 @@ router.delete('/messages/:id', (req, res) => {
 // USERS
 
 // get a user
-router.get('/user', (req, res) => {
+router.get('/user', authMiddleware, (req, res) => {
   models.User.findById(req.session.user_id, {
     attributes: ['displayName'],
     include: [{
@@ -202,7 +200,7 @@ router.get('/user', (req, res) => {
 });
 
 // Update a users password
-router.patch('/user', (req, res) => {
+router.patch('/user', authMiddleware, (req, res) => {
   models.User.update({
     password: bcrypt.hashSync(req.body.password, 8)
   }, {
@@ -214,7 +212,7 @@ router.patch('/user', (req, res) => {
 
 
 // delete a user and everything associated with it
-router.delete('/user', (req, res) => {
+router.delete('/user', authMiddleware, (req, res) => {
   models.Like.destroy({
     where: {
       userId: req.session.user_id
