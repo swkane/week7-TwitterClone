@@ -189,16 +189,43 @@ router.delete('/messages/:id', (req, res) => {
 
 // USERS
 
+// get a user
+router.get('/user', (req, res) => {
+  models.User.findById(req.session.user_id, {
+    attributes: ['displayName'],
+    include: [{
+      model: models.Post,
+      include: [models.Like]
+    }]
+  })
+  .then(user => res.json({ user }));
+});
 
+// Update a users password
+
+
+// delete a user and everything associated with it
 router.delete('/user', (req, res) => {
-  console.log(req.session.user_id);
-  models.User.destroy({
+  models.Like.destroy({
     where: {
-      id: req.session.user_id
+      userId: req.session.user_id
     }
-  }).then((user) => {
-    res.json({user: req.session.user_id})
-  });
+  })
+  .then(() => {
+    return models.Post.destroy({
+      where: {
+        userId: req.session.user_id
+      }
+    })
+  })
+  .then(() => {
+    return models.User.destroy({
+      where: {
+        id: req.session.user_id
+      }
+    })
+  })
+  .then(user => res.json({user: req.session.user_id}))
 });
 
 
